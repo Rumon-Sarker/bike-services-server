@@ -47,6 +47,7 @@ const verifyJwt = async (req, res, next) => {
 
 const servicesCollation = client.db("bikeServices").collection("services");
 const bookingCollation = client.db("bikeServices").collection("booking");
+const contatCollation = client.db("bikeServices").collection("contact");
 
 
 async function run() {
@@ -58,11 +59,11 @@ async function run() {
 
         app.post('/jwt', async (req, res) => {
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5h" });
             res.send({ token });
         })
 
-        // Services 
+        // Services Api
 
         app.get('/services', async (req, res) => {
             const corsur = servicesCollation.find();
@@ -82,6 +83,8 @@ async function run() {
             const result = await servicesCollation.findOne(quiry, options);
             res.send(result);
         })
+
+        //Booking Api
 
         app.get("/booking", verifyJwt, async (req, res) => {
             const decoded = req.decoded;
@@ -119,6 +122,14 @@ async function run() {
             };
             const result = await bookingCollation.updateOne(quiry, updateDoc);
             res.send(result)
+        })
+
+        // Cotuct Api 
+
+        app.post("/contact", async (req, res) => {
+            const items = req.body;
+            const result = await contatCollation.insertOne(items);
+            res.send(result);
         })
 
 
